@@ -33,3 +33,7 @@ move_down 8
 
 # Footer
 # render :partial => "footer"
+
+
+barcode = Barby::Code39.new @order.number
+barcode.annotate_pdf(self, height: 20, width: 100)
