@@ -11,7 +11,4 @@ Spree::Admin::OrdersController.class_eval do
     end
   end
 
-  def index
-    @orders = Spree::Order.where{(shipment_state == "ready") | (shipment_state == "partial")}
-  end
 end
