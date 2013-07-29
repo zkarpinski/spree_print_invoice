@@ -36,6 +36,10 @@ bounding_box [0,600], :width => 540 do
       data2 << [bill_address.country.name, ship_address.country.name]
       data2 << [bill_address.phone, ship_address.phone]
       data2 << ["PAYMENT: #{@order.payment_state.titlecase}", "SHIP: #{@order.shipping_method.try(:name)}"]
+
+      if @order.customer_purchase_order_number
+        data2 << ["PO: #{@order.customer_purchase_order_number}", ""]
+      end
     end
     
     table data2,
