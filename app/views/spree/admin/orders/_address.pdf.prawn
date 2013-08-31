@@ -1,7 +1,7 @@
 # Address Stuff
 
 bill_address = @order.bill_address
-ship_address = @order.ship_address
+ship_address = @shipment ? @shipment.address : @order.ship_address
 anonymous = @order.email =~ /@example.net$/
 
 
@@ -39,8 +39,8 @@ bounding_box [0,580], :width => 540 do
       data2 << [bill_address.address2, ship_address.address2, "PO: #{@order.customer_purchase_order_number ? @order.customer_purchase_order_number : 'N/A' }"] unless 
                 bill_address.address2.blank? and ship_address.address2.blank? and @order.customer_purchase_order_number.blank?
 
-      data2 << ["#{@order.bill_address.zipcode}, #{@order.bill_address.city}  #{(@order.bill_address.state ? @order.bill_address.state.abbr : "")}",
-                  "#{@order.ship_address.zipcode}, #{@order.ship_address.city} #{(@order.ship_address.state ? @order.ship_address.state.abbr : "")}", 
+      data2 << ["#{bill_address.zipcode}, #{bill_address.city}  #{(bill_address.state ? bill_address.state.abbr : "")}",
+                  "#{ship_address.zipcode}, #{ship_address.city} #{(ship_address.state ? ship_address.state.abbr : "")}", 
                   ""]
       data2 << [bill_address.country.name, ship_address.country.name, ""]
       data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", ""]

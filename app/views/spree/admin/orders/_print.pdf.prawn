@@ -18,6 +18,8 @@ move_down 4
 
 font "Helvetica",  size: 8,  :style => :bold
 text "#{I18n.t(:order_number)} #{@order.number}", :align => :right
+move_down 2
+text "Shipment Number: #{@shipment.number}", :align => :right
 
 move_down 2
 font "Helvetica", size: 8
@@ -38,5 +40,15 @@ move_down 20
 
 render :partial => "line_items_box"
 
-barcode = Barby::Code39.new @order.number
-barcode.annotate_pdf(self, height: 20, width: 100)
+if @hide_prices
+  text "SHIPMENT"
+  move_down 2
+  barcode = Barby::Code39.new @shipment.number
+  barcode.annotate_pdf(self, height: 20, width: 100)
+
+else
+  text "ORDER"
+  move_down 2
+  barcode = Barby::Code39.new @order.number
+  barcode.annotate_pdf(self, height: 20, width: 100)
+end
