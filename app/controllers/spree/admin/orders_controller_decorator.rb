@@ -10,15 +10,4 @@ Spree::Admin::OrdersController.class_eval do
       end
     end
   end
-
-  def print_packing_labels 
-    load_order
-    respond_with(@order) do |format|
-      format.pdf do
-        @hide_prices = params[:template] = "packaging_slip"
-        render :layout => false , :template => "spree/admin/orders/shipments.pdf.prawn"
-      end
-    end
-  end
-
 end
