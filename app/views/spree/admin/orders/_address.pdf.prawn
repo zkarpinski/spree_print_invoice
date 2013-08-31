@@ -8,7 +8,7 @@ anonymous = @order.email =~ /@example.net$/
 bounding_box [0,580], :width => 540 do
   move_down 2
   data = [[Prawn::Table::Cell.new( :text => I18n.t(:billing_address), :font_style => :bold ),
-          Prawn::Table::Cell.new( :text =>I18n.t(:shipping_address), :font_style => :bold ),
+          Prawn::Table::Cell.new( :text => I18n.t(:shipping_address), :font_style => :bold ),
           Prawn::Table::Cell.new( :text => "Other Information", :font_style => :bold )]]
 
   table data,
@@ -33,16 +33,16 @@ bounding_box [0,580], :width => 540 do
                 "PAYMENT: #{@order.payment_state.titlecase}" ],
                [bill_address.address1, 
                 ship_address.address1, 
-                "SHIP: #{@order.shipping_method.try(:name)}"]
+                "SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
                ]
 
-      data2 << [bill_address.address2, ship_address.address2, "PO: #{@order.customer_purchase_order_number ? @order.customer_purchase_order_number : 'N/A' }"] unless 
+      data2 << [bill_address.address2, ship_address.address2, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"] unless 
                 bill_address.address2.blank? and ship_address.address2.blank? and @order.customer_purchase_order_number.blank?
 
       data2 << ["#{bill_address.zipcode}, #{bill_address.city}  #{(bill_address.state ? bill_address.state.abbr : "")}",
                   "#{ship_address.zipcode}, #{ship_address.city} #{(ship_address.state ? ship_address.state.abbr : "")}", 
                   ""]
-      data2 << [bill_address.country.name, ship_address.country.name, ""]
+      data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
       data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", ""]
     end
     

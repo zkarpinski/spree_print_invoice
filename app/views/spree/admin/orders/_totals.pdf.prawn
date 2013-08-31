@@ -7,7 +7,6 @@ totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold),
 end
 
 totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
-
 bounding_box [bounds.right - 500, bounds.bottom + (totals.length * 18)], :width => 500 do
   table totals,
     :position => :right,
