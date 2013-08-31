@@ -17,13 +17,17 @@ fill_color "000000"
 move_down 4
 
 font "Helvetica",  size: 8,  :style => :bold
-text "#{I18n.t(:order_number)} #{@order.number}", :align => :right
+text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
 move_down 2
-text "Shipment Number: #{@shipment.number}", :align => :right
+if @shipment
+  text "Shipment: #{@shipment.number}", :align => :right
+else
+  text "", :align => :right
+end
+move_down 2
 
-move_down 2
 font "Helvetica", size: 8
-text "#{I18n.l @order.completed_at.to_date}", :align => :right
+text "Date: #{@order.completed_at.strftime("%m/%d/%Y")}", :align => :right
 
 font "Helvetica", size: 8
 render partial: "spree/admin/purchase_orders/prawn/company_info"
@@ -39,16 +43,15 @@ end
 move_down 20
 
 render :partial => "line_items_box"
+move_down 10
 
-if @hide_prices
+if @shipment
   text "SHIPMENT"
-  move_down 2
   barcode = Barby::Code39.new @shipment.number
   barcode.annotate_pdf(self, height: 20, width: 100)
 
 else
   text "ORDER"
-  move_down 2
   barcode = Barby::Code39.new @order.number
   barcode.annotate_pdf(self, height: 20, width: 100)
 end

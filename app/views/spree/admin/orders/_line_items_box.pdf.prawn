@@ -16,7 +16,7 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
   header <<  Prawn::Table::Cell.new( :text => t(:total), :font_style => :bold ) unless @hide_prices
     
   table [header],
-    :position           => :center,
+    :position => :center,
     :border_width => 1,
     :vertical_padding   => 4,
     :horizontal_padding => 6,
@@ -29,7 +29,14 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
   bounding_box [0,cursor], :width => 540 do
     #move_down 2
     content = []
-    @order.line_items.each do |item|
+
+    if @hide_prices and @order.shipments.size > 1 
+      line_items = @shipment.split_shipment_line_items
+    else
+      line_items = @order.line_items
+    end
+ 
+    line_items.each do |item|
       row = [ item.variant.sku, item.variant.product.name]
       row << number_to_currency(item.price) unless @hide_prices
       row << item.quantity
@@ -39,7 +46,7 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
 
 
     table content,
-      :position           => :center,
+      :position => :center,
       :border_width => 0.5,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
