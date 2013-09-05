@@ -2,12 +2,12 @@ if @hide_prices
   @column_widths = { 0 => 100, 1 => 390, 2 => 50 } 
   @align = { 0 => :left, 1 => :left, 2 => :right, 3 => :right }
 else
-  @column_widths = { 0 => 100, 1 => 240, 2 => 75, 3 => 50, 4 => 75 } 
+  @column_widths = { 0 => 100, 1 => 240, 2 => 70, 3 => 50, 4 => 70 } 
   @align = { 0 => :left, 1 => :left, 2 => :left, 3 => :right, 4 => :right, 5 => :right}
 end
 
 # Line Items
-bounding_box [0,cursor], :width => 540, :height => 400 do
+bounding_box [0,cursor], :width => 530, :height => 400 do
   #move_down 2
   header =  [Prawn::Table::Cell.new( :text => t(:sku), :font_style => :bold),
                 Prawn::Table::Cell.new( :text => t(:item_description), :font_style => :bold ) ]
@@ -17,7 +17,7 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
     
   table [header],
     :position => :center,
-    :border_width => 1,
+    :border_width => 0,
     :vertical_padding   => 4,
     :horizontal_padding => 6,
     :font_size => 8,
@@ -26,7 +26,7 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
 
   #move_down 4
 
-  bounding_box [0,cursor], :width => 540 do
+  bounding_box [0,cursor], :width => 530 do
     #move_down 2
     content = []
 
@@ -47,7 +47,7 @@ bounding_box [0,cursor], :width => 540, :height => 400 do
 
     table content,
       :position => :center,
-      :border_width => 0.5,
+      :border_width => 0,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
       :font_size => 8,

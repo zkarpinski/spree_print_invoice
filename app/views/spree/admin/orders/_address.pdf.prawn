@@ -48,6 +48,7 @@ bounding_box [0,580], :width => 540 do
     
     table data2,
       :position           => :center,
+      :border => 0,
       :border_width => 0.0,
       :vertical_padding   => 1,
       :horizontal_padding => 6,
