@@ -4,7 +4,7 @@ require 'prawn/layout'
 font "Helvetica"
 im = "#{Rails.root.to_s}/public/assets/#{Spree::PrintInvoice::Config[:print_invoice_logo_path]}"
 
-image im , :at => [0,720] #, :scale => 0.35
+image im , :at => [0,720], :scale => 0.7
 
 fill_color "E99323"
 if @hide_prices
@@ -43,15 +43,15 @@ end
 move_down 20
 
 render :partial => "line_items_box"
-move_down 10
+move_down 3
 
 if @shipment
-  text "SHIPMENT"
+  text "S#{@order.id}"
   barcode = Barby::Code39.new @shipment.number
   barcode.annotate_pdf(self, height: 20, width: 100)
 
 else
-  text "ORDER"
+  text "O#{@order.id}"
   barcode = Barby::Code39.new @order.number
   barcode.annotate_pdf(self, height: 20, width: 100)
 end

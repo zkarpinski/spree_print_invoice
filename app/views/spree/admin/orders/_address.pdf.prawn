@@ -43,7 +43,7 @@ bounding_box [0,580], :width => 540 do
                   "#{ship_address.zipcode}, #{ship_address.city} #{(ship_address.state ? ship_address.state.abbr : "")}", 
                   ""]
       data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
-      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", ""]
+      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", @order.payment_summary]
     end
     
     table data2,
