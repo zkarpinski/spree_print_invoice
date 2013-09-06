@@ -64,7 +64,7 @@ bounding_box [0,580], :width => 540 do
     else
       data2 = [["#{bill_address.firstname} #{bill_address.lastname}", 
                 "#{ship_address.firstname} #{ship_address.lastname}", 
-                "PAYMENT: #{@order.payment_state.titlecase}" ],
+                "PAYMENT: #{params[:balance_due] ? "BALANCE DUE" : @order.payment_state.titlecase}" ],
                [bill_address.address1, 
                 ship_address.address1, 
                 "SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
