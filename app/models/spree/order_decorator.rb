@@ -16,10 +16,12 @@ Spree::Order.class_eval do
       pa = []
       valid_payments.each do |p|
         pm = p.payment_method
-        if pm.type == "Credit Card"
+        if pm and pm.type == "Credit Card"
            pa.push("#{p.source.cc_type.upcase} #{p.source.display_number}")
-        else
+        elsif pm
           pa.push("#{pm.name.upcase} - #{pm.description}")
+        else
+          "DELETED"
         end
       end
 
@@ -37,10 +39,12 @@ Spree::Order.class_eval do
       pa = []
       valid_payments.each do |p|
         pm = p.payment_method
-        if pm.name == "Credit Card"
+        if pm and pm.name == "Credit Card"
            pa.push("#{p.source.cc_type.upcase}")
-        else
+        elsif pm
           pa.push("#{pm.name.upcase}")
+        else
+          "DELETED"
         end
       end
 
