@@ -12,7 +12,7 @@ Spree::Order.class_eval do
       pa = []
       payments.each do |p|
         pm = p.payment_method
-        if pm.type == "Spree::CreditCard"
+        if pm.type == "CreditCard"
            pa.push("#{p.source.cc_type.upcase} #{p.source.display_number}")
         else
           pa.push("#{pm.name.upcase} - #{pm.description}")
