@@ -174,7 +174,7 @@ bounding_box [0,450], :width => 530, :height => 400 do
 
   totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold), number_to_currency(@order.item_total)]
 
-  @order.adjustments.each do |charge|
+  @order.adjustments.where(eligible: true).each do |charge|
     totals << [Prawn::Table::Cell.new( :text => charge.label + ":", :font_style => :bold), number_to_currency(charge.amount)]
   end
 
