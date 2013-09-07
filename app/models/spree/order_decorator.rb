@@ -7,16 +7,19 @@ Spree::Order.class_eval do
     :value => Proc.new { |p| p.number }
 
   def valid_payments
-    payments.where{(state != "invalid") & (state != "void")}
+    payments.where{(state == "pending") & (state == "completed")}
   end
 
   def payment_summary
     paysum = ""
+
     if valid_payments.size > 0
       pa = []
+
       valid_payments.each do |p|
         pm = p.payment_method
-        if pm and pm.type == "Credit Card"
+
+        if pm and pm.name == "Credit Card"
            pa.push("#{p.source.cc_type.upcase} #{p.source.display_number}")
         elsif pm
           pa.push("#{pm.name.upcase} - #{pm.description}")
@@ -35,10 +38,13 @@ Spree::Order.class_eval do
 
   def short_payment_summary
     paysum = ""
+
     if valid_payments.size > 0
       pa = []
+
       valid_payments.each do |p|
         pm = p.payment_method
+
         if pm and pm.name == "Credit Card"
            pa.push("#{p.source.cc_type.upcase}")
         elsif pm
