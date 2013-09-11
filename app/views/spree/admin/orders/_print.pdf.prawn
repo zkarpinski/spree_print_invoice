@@ -27,7 +27,7 @@ end
 move_down 2
 
 font "Helvetica", size: 8
-text "Date: #{@order.captured_at.strftime("%m/%d/%Y")}", :align => :right
+text "Date: #{(@order.captured_at ? @order.captured_at : Time.current).strftime("%m/%d/%Y")}", :align => :right
 
 font "Helvetica", size: 8
 render partial: "spree/admin/purchase_orders/prawn/company_info"
@@ -39,7 +39,7 @@ ship_address = @shipment ? @shipment.address : @order.ship_address
 anonymous = @order.email =~ /@example.net$/
 
 
-bounding_box [0,580], :width => 540 do
+bounding_box [0,610], :width => 540 do
   move_down 2
   data = [[Prawn::Table::Cell.new( :text => I18n.t(:billing_address), :font_style => :bold ),
           Prawn::Table::Cell.new( :text => I18n.t(:shipping_address), :font_style => :bold ),
@@ -52,7 +52,7 @@ bounding_box [0,580], :width => 540 do
     :horizontal_padding => 6,
     :font_size => 8,
     :border_style => :underline_header,
-    :column_widths => { 0 => 200, 1 => 200, 2 => 130 }
+    :column_widths => { 0 => 300, 1 => 120, 2 => 120 }
 
   move_down 2
   horizontal_rule
@@ -64,18 +64,16 @@ bounding_box [0,580], :width => 540 do
     else
       data2 = [["#{bill_address.firstname} #{bill_address.lastname}", 
                 "#{ship_address.firstname} #{ship_address.lastname}", 
-                "PAYMENT: #{params[:balance_due] ? "BALANCE DUE" : @order.payment_state.titlecase}" ],
-               [bill_address.address1, 
-                ship_address.address1, 
-                "SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
-               ]
+                "PAYMENT: #{@order.payment_state.titlecase}" ]]
+      data2 << [bill_address.company, ship_address.company,"SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
 
-      data2 << [bill_address.address2, ship_address.address2, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"] unless 
-                bill_address.address2.blank? and ship_address.address2.blank? and @order.customer_purchase_order_number.blank?
+      data2 << [bill_address.address1, ship_address.address1, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"]
 
-      data2 << ["#{bill_address.zipcode}, #{bill_address.city}  #{(bill_address.state ? bill_address.state.abbr : "")}",
-                  "#{ship_address.zipcode}, #{ship_address.city} #{(ship_address.state ? ship_address.state.abbr : "")}", 
-                  ""]
+      data2 << [bill_address.address2, ship_address.address2,""] 
+
+      data2 << ["#{bill_address.city},  #{(bill_address.state ? bill_address.state.abbr : "")} #{bill_address.zipcode}",
+                "#{ship_address.city}, #{(ship_address.state ? ship_address.state.abbr : "")} #{ship_address.zipcode}", 
+                ""]
       data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
       data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", @order.payment_summary]
     end
@@ -87,7 +85,7 @@ bounding_box [0,580], :width => 540 do
       :vertical_padding   => 1,
       :horizontal_padding => 6,
       :font_size => 8,
-      :column_widths => { 0 => 200, 1 => 200, 2 => 130 }
+      :column_widths => { 0 => 300, 1 => 120, 2 => 120 }
   end
 
   move_down 2
