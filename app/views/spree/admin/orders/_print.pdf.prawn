@@ -27,7 +27,7 @@ end
 move_down 2
 
 font "Helvetica", size: 8
-text "Date: #{@order.completed_at.strftime("%m/%d/%Y")}", :align => :right
+text "Date: #{@order.captured_at.strftime("%m/%d/%Y")}", :align => :right
 
 font "Helvetica", size: 8
 render partial: "spree/admin/purchase_orders/prawn/company_info"
