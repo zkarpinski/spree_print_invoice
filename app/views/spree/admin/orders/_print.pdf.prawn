@@ -195,14 +195,21 @@ bounding_box [0,450], :width => 530, :height => 400 do
 
   end
 
+  font "Helvetica", size: 8
+  additional_info = " - #{@order.completed_at.strftime("%m/%d/%Y %l:%M %p")}"
+
+  unless @order.slug.blank?
+    additional_info += " - #{@order.slug}"
+  end
+
   bounding_box [10, 50], :width => 175, height: 40 do
     if @shipment
-      text "S#{@order.id} - #{@order.completed_at.strftime("%m/%d/%Y %l:%M %p")}"
+      text "S#{@order.id}#{additional_info}"
       barcode = Barby::Code39.new @shipment.number
       barcode.annotate_pdf(self, height: 30, width: 100)
 
     else
-      text "O#{@order.id} - #{@order.completed_at.strftime("%m/%d/%Y %l:%M %p")}"
+      text "O#{@order.id}#{additional_info}"
       barcode = Barby::Code39.new @order.number
       barcode.annotate_pdf(self, height: 30, width: 100)
     end
