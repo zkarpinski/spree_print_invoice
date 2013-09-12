@@ -101,11 +101,15 @@ bounding_box [0,610], :width => 540 do
 
 end
 
-move_down 10
+move_down 5
 
-if @order.special_instructions
-  text "Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}"
-  move_down 10
+text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :center, font_style: :bold)
+
+move_down 5
+
+unless @order.special_instructions.blank?
+  text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :center)
+  move_down 5
 end
 
 
