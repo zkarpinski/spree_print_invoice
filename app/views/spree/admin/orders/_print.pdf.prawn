@@ -27,9 +27,10 @@ end
 move_down 2
 
 font "Helvetica", size: 8
-text "Date: #{(@order.captured_at ? @order.captured_at : Time.current).strftime("%m/%d/%Y")}", :align => :right
+unless @order.captured_at == nil
+  text "Date: #{@order.captured_at.strftime("%m/%d/%Y")}", :align => :right
+end
 
-font "Helvetica", size: 8
 render partial: "spree/admin/purchase_orders/prawn/company_info"
 
 # Address Stuff
