@@ -7,7 +7,7 @@ Spree::Order.class_eval do
     :value => Proc.new { |p| p.number }
 
   def valid_payments
-    payments.where{(state == "pending") | (state == "completed")}
+    payments.where{((state == "pending") | (state == "completed")) & (amount > 0.0)}
   end
 
   def payment_summary
@@ -19,7 +19,7 @@ Spree::Order.class_eval do
       valid_payments.each do |p|
         pm = p.payment_method
 
-        if pm and pm.name == "Credit Card"
+        if pm and pm.name == "Credit Card" and p.source.try?(:cc_type)
            pa.push("#{p.source.cc_type.upcase} #{p.source.display_number}")
         elsif pm
           pa.push("#{pm.name.upcase} - #{pm.description}")
