@@ -45,7 +45,7 @@ Spree::Order.class_eval do
       valid_payments.each do |p|
         pm = p.payment_method
 
-        if pm and pm.name == "Credit Card"
+        if pm and pm.name == "Credit Card" and p.source.try?(:cc_type)
            pa.push("#{p.source.cc_type.upcase}")
         elsif pm
           pa.push("#{pm.name.upcase}")
