@@ -16,17 +16,23 @@ else
 end
 fill_color "000000"
 
-move_down 4
+move_down 1 
 
-font "Helvetica",  size: 8,  :style => :bold
+font "Helvetica",  size: 8
 text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
-move_down 2
+move_down 1
+
 if @shipment
   text "Shipment: #{@shipment.number}", :align => :right
 else
   text "", :align => :right
 end
-move_down 2
+move_down 1
+
+if @order.try(:customer_email_id)
+  text("Customer: #{@order.customer_email_id}", align: :right)
+  move_down 1
+end
 
 font "Helvetica", size: 8
 unless @order.captured_at == nil
@@ -67,7 +73,7 @@ bounding_box [0,610], :width => 540 do
     else
       data2 = [["#{bill_address.firstname} #{bill_address.lastname}", 
                 "#{ship_address.firstname} #{ship_address.lastname}", 
-                (@quote == true ? "" : @order.display_pay_state(params).titlecase) ]]
+                (@quote == true ? "" : @order.display_pay_state(params)) ]]
       data2 << [bill_address.company, ship_address.company,"SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
 
       data2 << [bill_address.address1, ship_address.address1, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"]

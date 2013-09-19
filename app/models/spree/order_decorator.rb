@@ -16,7 +16,7 @@ Spree::Order.class_eval do
     elsif p[:template] == "quote"
       ""
     else
-      "Payment: #{payment.payment_state}"
+      "Payment: #{payment_state.titlecase}"
     end
   end
 
