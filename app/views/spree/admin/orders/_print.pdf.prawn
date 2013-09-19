@@ -7,8 +7,10 @@ im = "#{Rails.root.to_s}/public/assets/#{Spree::PrintInvoice::Config[:print_invo
 image im , :at => [0,720], :scale => 0.7
 
 fill_color "E99323"
-if @hide_prices
+if @hide_prices and not @quote
   text I18n.t(:packaging_slip), :align => :right, :style => :bold, :size => 18
+elsif not @hide_prices and @quote
+  text("QUOTE", align: :right, style: :bold, size: 18)
 else
   text I18n.t(:customer_invoice), :align => :right, :style => :bold, :size => 18
 end
@@ -65,7 +67,7 @@ bounding_box [0,610], :width => 540 do
     else
       data2 = [["#{bill_address.firstname} #{bill_address.lastname}", 
                 "#{ship_address.firstname} #{ship_address.lastname}", 
-                "PAYMENT: #{@order.payment_state.titlecase}" ]]
+                (@quote == true ? "" : @order.display_pay_state(params).titlecase) ]]
       data2 << [bill_address.company, ship_address.company,"SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
 
       data2 << [bill_address.address1, ship_address.address1, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"]
@@ -76,7 +78,7 @@ bounding_box [0,610], :width => 540 do
                 "#{ship_address.city}, #{(ship_address.state ? ship_address.state.abbr : "")} #{ship_address.zipcode}", 
                 ""]
       data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
-      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", @order.payment_summary]
+      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", (@quote == true ? "" : @order.payment_summary)]
     end
     
     table data2,

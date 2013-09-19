@@ -3,6 +3,8 @@ Spree::Admin::OrdersController.class_eval do
 
   def show
     load_order
+    @hide_prices = false
+    @quote = false
     respond_with(@order) do |format|
       format.pdf do
         template = params[:template] || "invoice"

@@ -10,6 +10,16 @@ Spree::Order.class_eval do
     payments.where{((state == "pending") | (state == "completed")) & (amount > 0.0)}
   end
 
+  def display_pay_state(p)
+    if p[:balance_due]
+      "Payment: Balance Due"
+    elsif p[:template] == "quote"
+      ""
+    else
+      "Payment: #{payment.payment_state}"
+    end
+  end
+
   def payment_summary
     paysum = ""
 

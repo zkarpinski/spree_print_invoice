@@ -7,6 +7,8 @@
       <%= button_link_to(t(button.to_s + "_print"), spree.admin_order_path(@order, :pdf , :template => button)) %>
     <% end %>
     <%= button_link_to("Print Balance Due Invoice", spree.admin_order_path(@order, :pdf , :template => "invoice", :balance_due => true)) %>
+    <%= button_link_to("Print Quote", spree.admin_order_path(@order, :pdf , :template => "quote")) %>
+
   </center>
   <br/><br/><br/>
 <% end %>  
