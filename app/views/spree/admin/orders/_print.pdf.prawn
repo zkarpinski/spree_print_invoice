@@ -61,7 +61,7 @@ bounding_box [0,610], :width => 538 do
     :horizontal_padding => 6,
     :font_size => 8,
     :border_style => :underline_header,
-    :column_widths => { 0 => 300, 1 => 120, 2 => 120 }
+    :column_widths => { 0 => 250, 1 => 190, 2 => 100 }
 
   move_down 2
   horizontal_rule
@@ -78,13 +78,13 @@ bounding_box [0,610], :width => 538 do
 
       data2 << [bill_address.address1, ship_address.address1, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"]
 
-      data2 << [bill_address.address2, ship_address.address2,""] 
+      data2 << [bill_address.address2, ship_address.address2, (@quote == true ? "" : @order.payment_summary)] 
 
       data2 << ["#{bill_address.city},  #{(bill_address.state ? bill_address.state.abbr : "")} #{bill_address.zipcode}",
                 "#{ship_address.city}, #{(ship_address.state ? ship_address.state.abbr : "")} #{ship_address.zipcode}", 
                 ""]
       data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
-      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", (@quote == true ? "" : @order.payment_summary)]
+      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", ""]
     end
     
     table data2,
@@ -94,7 +94,7 @@ bounding_box [0,610], :width => 538 do
       :vertical_padding   => 1,
       :horizontal_padding => 6,
       :font_size => 8,
-      :column_widths => { 0 => 300, 1 => 120, 2 => 120 }
+      :column_widths => { 0 => 250, 1 => 190, 2 => 100 }
   end
 
   move_down 2
