@@ -48,7 +48,7 @@ ship_address = @shipment ? @shipment.address : @order.ship_address
 anonymous = @order.email =~ /@example.net$/
 
 
-bounding_box [0,610], :width => 540 do
+bounding_box [0,610], :width => 538 do
   move_down 2
   data = [[Prawn::Table::Cell.new( :text => I18n.t(:billing_address), :font_style => :bold ),
           Prawn::Table::Cell.new( :text => I18n.t(:shipping_address), :font_style => :bold ),
@@ -66,7 +66,7 @@ bounding_box [0,610], :width => 540 do
   move_down 2
   horizontal_rule
 
-  bounding_box [0,0], :width => 540 do
+  bounding_box [0,0], :width => 538 do
     move_down 2
     if anonymous and Spree::Config[:suppress_anonymous_address]
       data2 = [[" "," ", " "]] * 6 
@@ -111,14 +111,6 @@ end
 
 move_down 5
 
-text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :center, font_style: :bold)
-
-move_down 5
-
-unless @order.special_instructions.blank?
-  text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :center)
-  move_down 5
-end
 
 
 if @hide_prices
@@ -129,7 +121,7 @@ else
   @align = { 0 => :left, 1 => :left, 2 => :left, 3 => :right, 4 => :right, 5 => :right}
 end
 
-bounding_box [0,450], :width => 530, :height => 400 do
+bounding_box [0,490], :width => 538, :height => 400 do
   #move_down 2
   header =  [Prawn::Table::Cell.new( :text => t(:sku), :font_style => :bold),
                 Prawn::Table::Cell.new( :text => t(:item_description), :font_style => :bold ) ]
@@ -181,6 +173,16 @@ bounding_box [0,450], :width => 530, :height => 400 do
 
   font "Helvetica", :size => 9
 
+  bounding_box [0, 100], width: 290 do
+
+    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :center, font_style: :bold)
+
+    move_down 5
+
+    unless @order.special_instructions.blank?
+      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :center)
+    end
+  end
   totals = []
 
   totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold), number_to_currency(@order.item_total)]
@@ -191,14 +193,14 @@ bounding_box [0,450], :width => 530, :height => 400 do
 
   totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
   
-  bounding_box [bounds.right - 360, bounds.bottom + (totals.length * 18)], :width => 300 do
+  bounding_box [bounds.right - 310, bounds.bottom + (totals.length * 18)], :width => 250 do
     table totals,
       :position => :right,
       :border_width => 0,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
       :font_size => 9,
-      :column_widths => { 0 => 275, 1 => 75 } ,
+      :column_widths => { 0 => 175, 1 => 75 } ,
       :align => { 0 => :right, 1 => :right }
 
   end
