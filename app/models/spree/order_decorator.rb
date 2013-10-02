@@ -7,7 +7,7 @@ Spree::Order.class_eval do
     :value => Proc.new { |p| p.number }
 
   def valid_payments
-    payments.where{((state == "pending") | (state == "completed")) & (amount > 0.0)}
+    payments.where{((state == "checkout") | (state == "pending") | (state == "completed")) & (amount > 0.0)}
   end
 
   def display_pay_state(p)
