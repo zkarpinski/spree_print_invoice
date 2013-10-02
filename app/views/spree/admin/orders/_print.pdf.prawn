@@ -18,7 +18,7 @@ fill_color "000000"
 
 move_down 1 
 
-font "Helvetica",  size: 8
+font "Helvetica",  size: 10
 text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
 move_down 1
 
@@ -34,7 +34,7 @@ if @order.try(:customer_email_id)
   move_down 1
 end
 
-font "Helvetica", size: 8
+font "Helvetica", size: 10
 unless @order.captured_at == nil
   text "Date: #{@order.captured_at.strftime("%m/%d/%Y")}", :align => :right
 end
@@ -48,69 +48,25 @@ ship_address = @shipment ? @shipment.address : @order.ship_address
 anonymous = @order.email =~ /@example.net$/
 
 
-bounding_box [0,610], :width => 538 do
-  move_down 2
-  data = [[Prawn::Table::Cell.new( :text => I18n.t(:billing_address), :font_style => :bold ),
-          Prawn::Table::Cell.new( :text => I18n.t(:shipping_address), :font_style => :bold ),
-          Prawn::Table::Cell.new( :text => "Other Information", :font_style => :bold )]]
-
-  table data,
-    :position => :center,
-    :border_width => 0.5,
-    :vertical_padding   => 4,
-    :horizontal_padding => 6,
-    :font_size => 8,
-    :border_style => :underline_header,
-    :column_widths => { 0 => 250, 1 => 190, 2 => 100 }
-
-  move_down 2
+bounding_box [0,590], width: 300 do
+  text "BILL TO", style: :bold
+  move_down 1
   horizontal_rule
-
-  bounding_box [0,0], :width => 538 do
-    move_down 2
-    if anonymous and Spree::Config[:suppress_anonymous_address]
-      data2 = [[" "," ", " "]] * 6 
-    else
-      data2 = [["#{bill_address.firstname} #{bill_address.lastname}", 
-                "#{ship_address.firstname} #{ship_address.lastname}", 
-                (@quote == true ? "" : @order.display_pay_state(params)) ]]
-      data2 << [bill_address.company, ship_address.company,"SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}"]
-
-      data2 << [bill_address.address1, ship_address.address1, "#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number}"]
-
-      data2 << [bill_address.address2, ship_address.address2, (@quote == true ? "" : @order.payment_summary)] 
-
-      data2 << ["#{bill_address.city},  #{(bill_address.state ? bill_address.state.abbr : "")} #{bill_address.zipcode}",
-                "#{ship_address.city}, #{(ship_address.state ? ship_address.state.abbr : "")} #{ship_address.zipcode}", 
-                ""]
-      data2 << [bill_address.country.name, ship_address.country.name, "#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}" : ""}"]
-      data2 << ["Phone: #{bill_address.phone}", "Phone: #{ship_address.phone}", ""]
-    end
-    
-    table data2,
-      :position           => :center,
-      :border => 0,
-      :border_width => 0.0,
-      :vertical_padding   => 1,
-      :horizontal_padding => 6,
-      :font_size => 8,
-      :column_widths => { 0 => 250, 1 => 190, 2 => 100 }
-  end
-
-  move_down 2
-
-  stroke do
-    line_width 0.5
-    line bounds.top_left, bounds.top_right
-    line bounds.top_left, bounds.bottom_left
-    line bounds.top_right, bounds.bottom_right
-    line bounds.bottom_left, bounds.bottom_right
-  end
-
+  move_down 1
+  text "#{bill_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{bill_address.phone}"
 end
 
-move_down 5
 
+bounding_box [310,590], width: 230 do
+  text "SHIP TO", style: :bold
+  move_down 1
+  horizontal_rule
+  move_down 1
+  text "#{ship_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{ship_address.phone}"
+end
+
+
+move_down 20
 
 
 if @hide_prices
@@ -121,7 +77,7 @@ else
   @align = { 0 => :left, 1 => :left, 2 => :left, 3 => :right, 4 => :right, 5 => :right}
 end
 
-bounding_box [0,490], :width => 538, :height => 400 do
+bounding_box [0,cursor], :width => 538, :height => 400 do
   #move_down 2
   header =  [Prawn::Table::Cell.new( :text => t(:sku), :font_style => :bold),
                 Prawn::Table::Cell.new( :text => t(:item_description), :font_style => :bold ) ]
@@ -134,7 +90,7 @@ bounding_box [0,490], :width => 538, :height => 400 do
     :border_width => 0,
     :vertical_padding   => 4,
     :horizontal_padding => 6,
-    :font_size => 8,
+    :font_size => 10,
     :column_widths => @column_widths ,
     :align => @align
 
@@ -166,23 +122,13 @@ bounding_box [0,490], :width => 538, :height => 400 do
       :border_width => 0,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
-      :font_size => 8,
+      :font_size => 10,
       :column_widths => @column_widths ,
       :align => @align
   end
 
   font "Helvetica", :size => 9
 
-  bounding_box [0, 100], width: 290 do
-
-    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :center, font_style: :bold)
-
-    move_down 5
-
-    unless @order.special_instructions.blank?
-      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :center)
-    end
-  end
   totals = []
 
   totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold), number_to_currency(@order.item_total)]
@@ -193,13 +139,13 @@ bounding_box [0,490], :width => 538, :height => 400 do
 
   totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
   
-  bounding_box [bounds.right - 310, bounds.bottom + (totals.length * 18)], :width => 250 do
+  bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
     table totals,
       :position => :right,
       :border_width => 0,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
-      :font_size => 9,
+      :font_size => 10,
       :column_widths => { 0 => 175, 1 => 75 } ,
       :align => { 0 => :right, 1 => :right }
 
@@ -212,7 +158,7 @@ bounding_box [0,490], :width => 538, :height => 400 do
     additional_info += " - #{@order.slug}"
   end
 
-  bounding_box [10, 50], :width => 175, height: 40 do
+  bounding_box [10, 50], :width => 185, height: 40 do
     if @shipment
       text "S#{@order.id}#{additional_info}"
       barcode = Barby::Code39.new @shipment.number
@@ -235,5 +181,21 @@ bounding_box [0,490], :width => 538, :height => 400 do
   end
 
 end
+
+move_down 10
+
+    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
+
+    move_down 5
+
+    unless @order.special_instructions.blank?
+      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
+    end
+    
+    move_down 5
+    
+    text "SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}
+#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number + "\n"}#{(@quote == true ? "" : @order.payment_summary + "\n")}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
+
 
 
