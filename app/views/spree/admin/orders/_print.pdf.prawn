@@ -50,23 +50,55 @@ anonymous = @order.email =~ /@example.net$/
 
 bounding_box [0,590], width: 300 do
   text "BILL TO", style: :bold
-  move_down 1
+  move_down 3
   horizontal_rule
-  move_down 1
+  move_down 3
   text "#{bill_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{bill_address.phone}"
 end
 
 
 bounding_box [310,590], width: 230 do
   text "SHIP TO", style: :bold
-  move_down 1
+  move_down 3
   horizontal_rule
-  move_down 1
+  move_down 3
   text "#{ship_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{ship_address.phone}"
 end
 
 
+move_down 15
+horizontal_rule
+move_down 15
+
+current_cursor = cursor
+
+bounding_box [0,current_cursor], width: 300 do
+
+  text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
+
+  move_down 5
+
+  unless @order.special_instructions.blank?
+    text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
+    move_down 5
+  end
+
+  text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
+  text "Shipment: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
+end
+
+bounding_box [310,current_cursor], width: 230 do
+  font "Helvetica", size: 14
+  text "THANK YOU!", :align => :right
+  move_down 5
+
+  if @order.admin_user
+    text "- #{@order.admin_user.email.split("@").first.titleize}", :align => :right
+  end
+end
+
 move_down 20
+
 
 
 if @hide_prices
@@ -78,7 +110,7 @@ else
 end
 
 bounding_box [0,cursor], :width => 538, :height => 400 do
-  #move_down 2
+  move_down 2
   header =  [Prawn::Table::Cell.new( :text => t(:sku), :font_style => :bold),
                 Prawn::Table::Cell.new( :text => t(:item_description), :font_style => :bold ) ]
   header <<  Prawn::Table::Cell.new( :text => t(:price), :font_style => :bold ) unless @hide_prices
@@ -91,7 +123,8 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
     :vertical_padding   => 4,
     :horizontal_padding => 6,
     :font_size => 10,
-    :column_widths => @column_widths ,
+    :column_widths => @column_widths,
+    :background_color => "d8d8d8",
     :align => @align
 
   move_down 2
@@ -99,7 +132,7 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
 
 
   bounding_box [0,380], :width => 530 do
-    #move_down 2
+    move_down 10
     content = []
 
     if @hide_prices and @order.shipments.size > 1 
@@ -183,19 +216,5 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
 end
 
 move_down 10
-
-    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
-
-    move_down 5
-
-    unless @order.special_instructions.blank?
-      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
-    end
-    
-    move_down 5
-    
-    text "SHIP: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}
-#{@order.customer_purchase_order_number.blank? ? '' : 'PO: ' + @order.customer_purchase_order_number + "\n"}#{(@quote == true ? "" : @order.payment_summary + "\n")}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
-
 
 
