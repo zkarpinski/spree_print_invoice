@@ -142,7 +142,13 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
     end
  
     line_items.each do |item|
-      row = [ item.variant.sku, item.variant.product.name]
+      product_name = item.variant.product.name
+
+      if item.respond_to?(:returnable) and not item.returnable
+        product_name = "(NON-RETURNABLE) #{product_name}"
+      end
+
+      row = [ item.variant.sku, product_name]
       row << number_to_currency(item.price) unless @hide_prices
       row << item.quantity
       row << number_to_currency(item.price * item.quantity) unless @hide_prices
