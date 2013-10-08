@@ -19,7 +19,11 @@ fill_color "000000"
 move_down 1 
 
 font "Helvetica",  size: 10
-text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
+if @quote
+  text "Q#{@order.number}", :align => :right
+else
+  text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
+end
 move_down 1
 
 if @shipment
@@ -74,16 +78,24 @@ current_cursor = cursor
 
 bounding_box [0,current_cursor], width: 300 do
 
-  text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
-
-  move_down 5
+  unless @quote
+    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
+    move_down 5
+  end
 
   unless @order.special_instructions.blank?
     text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
     move_down 5
   end
 
-  text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
+  if params["balance_due"] == "true"
+    text "Payment: BALANCE DUE"
+  elsif not @quote
+    text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
+  else
+    text "QUOTE ONLY - NOT AN INVOICE"
+  end
+
   text "Shipment: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
 end
 
@@ -131,7 +143,7 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
   horizontal_rule
 
 
-  bounding_box [0,380], :width => 530 do
+  bounding_box [0,cursor], :width => 530 do
     move_down 10
     content = []
 
