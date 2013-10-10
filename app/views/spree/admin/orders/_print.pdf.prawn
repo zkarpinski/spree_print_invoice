@@ -117,20 +117,20 @@ if @hide_prices
   @column_widths = { 0 => 100, 1 => 390, 2 => 50 } 
   @align = { 0 => :left, 1 => :left, 2 => :right, 3 => :right }
 else
-  @column_widths = { 0 => 100, 1 => 240, 2 => 70, 3 => 50, 4 => 70 } 
-  @align = { 0 => :left, 1 => :left, 2 => :left, 3 => :right, 4 => :right, 5 => :right}
+  @column_widths = { 0 => 90, 1 => 250, 2 => 75, 3 => 50, 4 => 75 } 
+  @align = { 0 => :left, 1 => :left, 2 => :center, 3 => :center, 4 => :right }
 end
 
 bounding_box [0,cursor], :width => 538, :height => 400 do
   move_down 2
-  header =  [Prawn::Table::Cell.new( :text => t(:sku), :font_style => :bold),
-                Prawn::Table::Cell.new( :text => t(:item_description), :font_style => :bold ) ]
-  header <<  Prawn::Table::Cell.new( :text => t(:price), :font_style => :bold ) unless @hide_prices
-  header <<  Prawn::Table::Cell.new( :text => t(:qty), :font_style => :bold, :align => 1 )
-  header <<  Prawn::Table::Cell.new( :text => t(:total), :font_style => :bold ) unless @hide_prices
+  header = [Prawn::Table::Cell.new( :text => "ID", :font_style => :bold)]
+  header << Prawn::Table::Cell.new( :text => "Title", :font_style => :bold ) 
+  header << Prawn::Table::Cell.new( :text => "Price", :font_style => :bold ) unless @hide_prices
+  header << Prawn::Table::Cell.new( :text => "Qty", :font_style => :bold, :align => 1 )
+  header << Prawn::Table::Cell.new( :text => "Total", :font_style => :bold ) unless @hide_prices
     
   table [header],
-    :position => :center,
+    :position => :left,
     :border_width => 0,
     :vertical_padding   => 4,
     :horizontal_padding => 6,
@@ -143,7 +143,7 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
   horizontal_rule
 
 
-  bounding_box [0,cursor], :width => 530 do
+  bounding_box [0,cursor], :width => 538 do
     move_down 10
     content = []
 
@@ -154,13 +154,18 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
     end
  
     line_items.each do |item|
-      product_name = item.variant.product.name
+      product_name = item.variant.product.name.split(":").first
 
       if item.respond_to?(:returnable) and not item.returnable
         product_name = "(NON-RETURNABLE) #{product_name}"
       end
 
-      row = [ item.variant.sku, product_name]
+      if item.variant.volume_discount
+        product_name += " - #{item.variant.volume_discount.quantity_discount(item.quantity)}% off"
+      end
+
+      row = [item.variant.sku]
+      row << product_name
       row << number_to_currency(item.price) unless @hide_prices
       row << item.quantity
       row << number_to_currency(item.price * item.quantity) unless @hide_prices
@@ -169,7 +174,7 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
 
 
     table content,
-      :position => :center,
+      :position => :left,
       :border_width => 0,
       :vertical_padding   => 2,
       :horizontal_padding => 6,
