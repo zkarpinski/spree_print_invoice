@@ -160,8 +160,8 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
         product_name = "(NON-RETURNABLE) #{product_name}"
       end
 
-      if item.variant.volume_discount
-        product_name += " - #{item.variant.volume_discount.quantity_discount(item.quantity)}% off"
+      if item.discount > 0.0
+        product_name += " - #{sprintf("%0.1f", item.discount)}% off"
       end
 
       row = [item.variant.sku]
