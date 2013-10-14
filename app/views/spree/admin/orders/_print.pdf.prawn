@@ -58,6 +58,10 @@ bounding_box [0,590], width: 300 do
   horizontal_rule
   move_down 3
   text "#{bill_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{bill_address.phone}"
+  if @order.customer_purchase_order_number and not @order.customer_purchase_order_number.blank?
+    move_down 1 
+    text "Customer PO: #{@order.customer_purchase_order_number}"
+  end
 end
 
 
