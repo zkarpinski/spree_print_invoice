@@ -80,7 +80,7 @@ move_down 15
 
 current_cursor = cursor
 
-bounding_box [0,current_cursor], width: 300 do
+bounding_box [0,current_cursor], width: 430 do
 
   unless @quote
     text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
@@ -103,7 +103,7 @@ bounding_box [0,current_cursor], width: 300 do
   text "Shipment: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
 end
 
-bounding_box [310,current_cursor], width: 230 do
+bounding_box [440,current_cursor], width: 100 do
   font "Helvetica", size: 14
   text "THANK YOU!", :align => :right
   move_down 5
