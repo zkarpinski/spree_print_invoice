@@ -51,13 +51,14 @@ bill_address = @order.bill_address
 ship_address = @shipment ? @shipment.address : @order.ship_address
 anonymous = @order.email =~ /@example.net$/
 
+current_cursor = cursor
 
-bounding_box [0,590], width: 300 do
+bounding_box [0,current_cursor], width: 300 do
   text "BILL TO", style: :bold
   move_down 3
   horizontal_rule
   move_down 3
-  text "#{bill_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{bill_address.phone}"
+  text "#{bill_address.to_s.gsub(/<br\/>/,"\n")}"
   if @order.customer_purchase_order_number and not @order.customer_purchase_order_number.blank?
     move_down 1 
     text "Customer PO: #{@order.customer_purchase_order_number}"
@@ -65,12 +66,12 @@ bounding_box [0,590], width: 300 do
 end
 
 
-bounding_box [310,590], width: 230 do
+bounding_box [310,current_cursor], width: 230 do
   text "SHIP TO", style: :bold
   move_down 3
   horizontal_rule
   move_down 3
-  text "#{ship_address.to_s.gsub(/<br\/>/,"\n")}\nPhone: #{ship_address.phone}"
+  text "#{ship_address.to_s.gsub(/<br\/>/,"\n")}"
 end
 
 
@@ -87,13 +88,9 @@ bounding_box [0,current_cursor], width: 430 do
     move_down 5
   end
 
-  unless @order.special_instructions.blank?
-    text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
-    move_down 5
-  end
 
   if params["balance_due"] == "true"
-    text "Payment: BALANCE DUE"
+    text "Payment: BALANCE DUE #{@order.payment_summary}"
   elsif not @quote
     text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
   else
@@ -125,7 +122,7 @@ else
   @align = { 0 => :left, 1 => :left, 2 => :center, 3 => :center, 4 => :right }
 end
 
-bounding_box [0,cursor], :width => 538, :height => 400 do
+bounding_box [0,cursor], :width => 538, :height => 350 do
   move_down 2
   header = [Prawn::Table::Cell.new( :text => "ID", :font_style => :bold)]
   header << Prawn::Table::Cell.new( :text => "Title", :font_style => :bold ) 
@@ -198,7 +195,18 @@ bounding_box [0,cursor], :width => 538, :height => 400 do
   end
 
   totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
-  
+
+  unless @order.special_instructions.blank?  
+    move_down 20
+
+    bounding_box [10,  bounds.bottom + (totals.length * 18) + 40], :width => 538 do
+      move_down 5
+      font "Helvetica", :size => 10, :style => :bold
+      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
+      move_down 5
+    end
+  end
+
   bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
     table totals,
       :position => :right,
