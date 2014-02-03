@@ -81,37 +81,39 @@ move_down 15
 
 current_cursor = cursor
 
-bounding_box [0,current_cursor], width: 430 do
+unless @hide_prices
 
-  unless @quote
-    text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
+  bounding_box [0,current_cursor], width: 430 do
+
+    unless @quote
+      text("OUR TERMS: Net 30.  We also accept payment by credit card.", align: :left, style: :bold)
+      move_down 5
+    end
+
+
+    if params["balance_due"] == "true"
+      text "Payment: BALANCE DUE #{@order.payment_summary}"
+    elsif not @quote
+      text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
+    else
+      text "QUOTE ONLY - NOT AN INVOICE"
+    end
+
+    text "Shipment: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
+  end
+
+  bounding_box [440,current_cursor], width: 100 do
+    font "Helvetica", size: 14
+    text "THANK YOU!", :align => :right
     move_down 5
+
+    if @order.admin_user
+      text "- #{@order.admin_user.email.split("@").first.titleize}", :align => :right
+    end
   end
 
-
-  if params["balance_due"] == "true"
-    text "Payment: BALANCE DUE #{@order.payment_summary}"
-  elsif not @quote
-    text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
-  else
-    text "QUOTE ONLY - NOT AN INVOICE"
-  end
-
-  text "Shipment: #{@shipment ? @shipment.shipping_method.try(:name) :  @order.shipping_method.try(:name)}#{@order.shipments.size > 1 ? "Shipments: #{@order.shipments.size}\n" : ""}"
+  move_down 20
 end
-
-bounding_box [440,current_cursor], width: 100 do
-  font "Helvetica", size: 14
-  text "THANK YOU!", :align => :right
-  move_down 5
-
-  if @order.admin_user
-    text "- #{@order.admin_user.email.split("@").first.titleize}", :align => :right
-  end
-end
-
-move_down 20
-
 
 
 if @hide_prices
@@ -188,14 +190,6 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
 
   totals = []
 
-  totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold), number_to_currency(@order.item_total)]
-
-  @order.adjustments.where(eligible: true).each do |charge|
-    totals << [Prawn::Table::Cell.new( :text => charge.label + ":", :font_style => :bold), number_to_currency(charge.amount)]
-  end
-
-  totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
-
   unless @order.special_instructions.blank?  
     move_down 20
 
@@ -207,16 +201,36 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
     end
   end
 
-  bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
-    table totals,
-      :position => :right,
-      :border_width => 0,
-      :vertical_padding   => 2,
-      :horizontal_padding => 6,
-      :font_size => 10,
-      :column_widths => { 0 => 175, 1 => 75 } ,
-      :align => { 0 => :right, 1 => :right }
 
+  unless @hide_prices
+    totals << [Prawn::Table::Cell.new( :text => t(:subtotal), :font_style => :bold), number_to_currency(@order.item_total)]
+
+    adjust = Hash.new
+
+    @order.adjustments.where(eligible: true).each do |charge|
+      unless adjust[charge.label]
+        adjust[charge.label] = 0.0
+      end
+      adjust[charge.label] += charge.amount
+    end
+    
+    adjust.each do |a_label, a_amount|
+      totals << [Prawn::Table::Cell.new( :text => a_label + ":", :font_style => :bold), number_to_currency(a_amount)]
+    end
+
+    totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
+    
+    bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
+      table totals,
+        :position => :right,
+        :border_width => 0,
+        :vertical_padding   => 2,
+        :horizontal_padding => 6,
+        :font_size => 10,
+        :column_widths => { 0 => 175, 1 => 75 } ,
+        :align => { 0 => :right, 1 => :right }
+
+    end
   end
 
   font "Helvetica", size: 8
