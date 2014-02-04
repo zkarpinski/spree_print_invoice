@@ -192,11 +192,13 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
 
   unless @order.special_instructions.blank?  
     move_down 20
-
-    bounding_box [10,  bounds.bottom + (totals.length * 18) + 40], :width => 538 do
+    bounding_box [10, cursor], :width => 538 do
       move_down 5
-      font "Helvetica", :size => 10, :style => :bold
-      text("Special Instructions: #{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
+      font "Helvetica", :size => 12, :style => :bold
+      text("Special Instructions:", align: :left)
+      move_down 1
+      font "Helvetica", :size => 10
+      text("#{@order.special_instructions.gsub(/\n/, " ")}", align: :left)
       move_down 5
     end
   end
@@ -215,7 +217,7 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
     end
     
     adjust.each do |a_label, a_amount|
-      totals << [Prawn::Table::Cell.new( :text => a_label + ":", :font_style => :bold), number_to_currency(a_amount)]
+      totals << [Prawn::Table::Cell.new( :text => a_label, :font_style => :bold), number_to_currency(a_amount)]
     end
 
     totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
