@@ -229,6 +229,7 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
         :vertical_padding   => 2,
         :horizontal_padding => 6,
         :font_size => 10,
+        :font_style => :bold,
         :column_widths => { 0 => 175, 1 => 75 } ,
         :align => { 0 => :right, 1 => :right }
 
