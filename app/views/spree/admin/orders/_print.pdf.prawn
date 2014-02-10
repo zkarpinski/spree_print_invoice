@@ -92,9 +92,9 @@ unless @hide_prices
 
 
     if params["balance_due"] == "true"
-      text "Payment: BALANCE DUE #{@order.payment_summary}"
+      text "Payment: #{@order.payment_summary(true)}"
     elsif not @quote
-      text "Payment: #{@order.payment_state.upcase} (#{(@quote == true ? "" : @order.payment_summary)})"
+      text "Payment: #{(@quote == true ? "" : @order.payment_summary)}"
     else
       text "QUOTE ONLY - NOT AN INVOICE"
     end
@@ -221,6 +221,13 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
     end
 
     totals << [Prawn::Table::Cell.new( :text => t(:order_total), :font_style => :bold), number_to_currency(@order.total)]
+
+    if params["balance_due"] == "true"
+      @order.payments.where("spree_payments.state = ? and spree_payment_methods.name = ?", "completed", "Credit Card").joins(:payment_method).each do |p|
+        totals << [Prawn::Table::Cell.new( :text => "Payment - #{p.source.cc_type.upcase} x#{p.source.last_digits}"), number_to_currency(p.amount)]
+      end 
+      totals << [Prawn::Table::Cell.new( :text => "BALANCE DUE", :font_style => :bold), number_to_currency(@order.amount_still_owed(true))]
+    end
     
     bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
       table totals,

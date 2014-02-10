@@ -20,22 +20,48 @@ Spree::Order.class_eval do
     end
   end
 
-  def payment_summary
+  def amount_still_owed(balance_due = false)
+    t = total.to_f
+
+    valid_payments.each do |p|
+
+      pm = p.payment_method
+
+      if balance_due and pm.name == "Credit Card" and p.state == "completed"
+        t -= p.amount.to_f
+      elsif not balance_due and p.state == "completed"
+        t -= p.amount.to_f
+      end
+    end
+
+    return t
+  end
+
+  def payment_summary(balance_due = false)
     paysum = ""
 
     if valid_payments.size > 0
       pa = []
 
       valid_payments.each do |p|
-        pm = p.payment_method
+        p_text = ""
 
+        pm = p.payment_method
         if pm and pm.name == "Credit Card" and p.source.try(:cc_type)
-           pa.push("#{p.source.cc_type.upcase} #{p.source.display_number}")
+          p_text += "#{p.source.cc_type.upcase} ends in #{p.source.last_digits}"
         elsif pm
-          pa.push("#{pm.name.upcase} - #{pm.description}")
-        else
-          "DELETED"
+          p_text += "#{pm.name.upcase}"
         end
+
+        if not balance_due or pm.name == "Credit Card"
+          p_text += ": #{p.state == "completed" ? "PAID" : "DUE"}="
+        else
+          p_text += ": DUE="
+        end
+        p_text += "#{Spree::Money.new(p.amount)}"
+
+
+        pa.push(p_text)
       end
 
       paysum = pa.join(", ")
