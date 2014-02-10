@@ -210,6 +210,10 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
     adjust = Hash.new
 
     @order.adjustments.where(eligible: true).each do |charge|
+      if charge.label == "RMA Credit"
+        charge.label += charge.created_at.strftime(" on %m/%d/%y")
+      end
+
       unless adjust[charge.label]
         adjust[charge.label] = 0.0
       end
@@ -224,9 +228,18 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
 
     if params["balance_due"] == "true"
       @order.payments.where("spree_payments.state = ? and spree_payment_methods.name = ?", "completed", "Credit Card").joins(:payment_method).each do |p|
-        totals << [Prawn::Table::Cell.new( :text => "Payment - #{p.source.cc_type.upcase} x#{p.source.last_digits}"), number_to_currency(p.amount)]
-      end 
-      totals << [Prawn::Table::Cell.new( :text => "BALANCE DUE", :font_style => :bold), Prawn::Table::Cell.new(text: number_to_currency(@order.amount_still_owed(true)), font_style: :bold)]
+        if p.source.respond_to?(:cc_type)
+          totals << [Prawn::Table::Cell.new( :text => "Payment - #{p.source.cc_type.upcase} x#{p.source.last_digits}"), number_to_currency(p.amount)]
+        end
+      end
+
+      bd_text = "BALANCE DUE"
+ 
+      if @order.amount_still_owed(true) < 0
+        bd_text = "CREDIT OWED"
+      end
+
+      totals << [Prawn::Table::Cell.new( :text => bd_text, :font_style => :bold), Prawn::Table::Cell.new(text: number_to_currency(@order.amount_still_owed(true).abs), font_style: :bold)]
     end
     
     bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
