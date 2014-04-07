@@ -242,7 +242,7 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
       totals << [Prawn::Table::Cell.new( :text => bd_text, :font_style => :bold), Prawn::Table::Cell.new(text: number_to_currency(@order.amount_still_owed(true).abs), font_style: :bold)]
     end
     
-    bounding_box [bounds.right - 260, bounds.bottom + (totals.length * 18)], :width => 250 do
+    bounding_box [bounds.right - 365, bounds.bottom + (totals.length * 18)], :width => 355 do
       table totals,
         :position => :right,
         :border_width => 0,
@@ -250,7 +250,7 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
         :horizontal_padding => 6,
         :font_size => 10,
         :font_style => :bold,
-        :column_widths => { 0 => 175, 1 => 75 } ,
+        :column_widths => { 0 => 280, 1 => 75 } ,
         :align => { 0 => :right, 1 => :right }
 
     end
