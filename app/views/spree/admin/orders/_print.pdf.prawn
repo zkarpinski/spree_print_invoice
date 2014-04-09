@@ -214,6 +214,10 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
         charge.label += charge.created_at.strftime(" on %m/%d/%y")
       end
 
+      if not charge.amount
+        charge.amount = 0.0
+      end
+
       unless adjust[charge.label]
         adjust[charge.label] = 0.0
       end
