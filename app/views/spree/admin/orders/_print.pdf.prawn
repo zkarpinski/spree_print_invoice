@@ -22,7 +22,7 @@ font "Helvetica",  size: 10
 if @quote
   text "Q#{@order.number}", :align => :right
 else
-  text "#{I18n.t(:order_number)}: #{@order.number}", :align => :right
+  text "Invoice/Order: #{@order.number}", :align => :right
 end
 move_down 1
 
