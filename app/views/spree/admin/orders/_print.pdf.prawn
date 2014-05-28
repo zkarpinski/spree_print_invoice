@@ -124,7 +124,17 @@ else
   @align = { 0 => :left, 1 => :left, 2 => :center, 3 => :center, 4 => :right }
 end
 
-bounding_box [0,cursor], :width => 538, :height => 350 do
+line_item_font_size = 10
+
+if @order.line_items.size >= 8
+  line_item_font_size = 9
+  
+  if @order.line_items.size >= 12
+    line_item_font_size = 7
+  end
+end
+
+bounding_box [0,cursor], :width => 550, :height => 350 do
   move_down 2
   header = [Prawn::Table::Cell.new( :text => "ID", :font_style => :bold)]
   header << Prawn::Table::Cell.new( :text => "Title", :font_style => :bold ) 
@@ -135,8 +145,8 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
   table [header],
     :position => :left,
     :border_width => 0,
-    :vertical_padding   => 4,
-    :horizontal_padding => 6,
+    :vertical_padding   => 2,
+    :horizontal_padding => 4,
     :font_size => 10,
     :column_widths => @column_widths,
     :background_color => "d8d8d8",
@@ -146,7 +156,7 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
   horizontal_rule
 
 
-  bounding_box [0,cursor], :width => 538 do
+  bounding_box [0,cursor], :width => 549 do
     move_down 10
     content = []
 
@@ -180,8 +190,8 @@ bounding_box [0,cursor], :width => 538, :height => 350 do
       :position => :left,
       :border_width => 0,
       :vertical_padding   => 2,
-      :horizontal_padding => 6,
-      :font_size => 10,
+      :horizontal_padding => 4,
+      :font_size => line_item_font_size,
       :column_widths => @column_widths ,
       :align => @align
   end
