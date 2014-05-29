@@ -134,7 +134,7 @@ if @order.line_items.size >= 8
   end
 end
 
-bounding_box [0,cursor], :width => 550, :height => 420 do
+bounding_box [0,cursor], :width => 550, :height => cursor do
   move_down 2
   header = [Prawn::Table::Cell.new( :text => "Item", :font_style => :bold)]
   header << Prawn::Table::Cell.new( :text => "Title", :font_style => :bold ) 
