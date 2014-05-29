@@ -120,7 +120,7 @@ if @hide_prices
   @column_widths = { 0 => 100, 1 => 390, 2 => 50 } 
   @align = { 0 => :left, 1 => :left, 2 => :right, 3 => :right }
 else
-  @column_widths = { 0 => 90, 1 => 250, 2 => 75, 3 => 50, 4 => 75 } 
+  @column_widths = { 0 => 115, 1 => 290, 2 => 40, 3 => 40, 4 => 60 } 
   @align = { 0 => :left, 1 => :left, 2 => :center, 3 => :center, 4 => :right }
 end
 
@@ -134,9 +134,9 @@ if @order.line_items.size >= 8
   end
 end
 
-bounding_box [0,cursor], :width => 550, :height => 350 do
+bounding_box [0,cursor], :width => 550, :height => 420 do
   move_down 2
-  header = [Prawn::Table::Cell.new( :text => "ID", :font_style => :bold)]
+  header = [Prawn::Table::Cell.new( :text => "Item", :font_style => :bold)]
   header << Prawn::Table::Cell.new( :text => "Title", :font_style => :bold ) 
   header << Prawn::Table::Cell.new( :text => "Price", :font_style => :bold ) unless @hide_prices
   header << Prawn::Table::Cell.new( :text => "Qty", :font_style => :bold, :align => 1 )
