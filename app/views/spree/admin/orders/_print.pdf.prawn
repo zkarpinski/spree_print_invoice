@@ -168,16 +168,25 @@ bounding_box [0,cursor], :width => 550, :height => cursor do
  
     line_items.each do |item|
       product_name = item.variant.product.name.split(":").first
+      
+      sku = item.variant.sku
+      sku_font_style = :normal
 
       if item.respond_to?(:returnable) and not item.returnable
-        product_name = "(NON-RETURNABLE) #{product_name}"
+        if sku =~ /ebook/i
+          product_name = "(NON-RETURNABLE e-Book) #{product_name}"
+          sku = item.variant.sku.gsub(/-ebook/i, "")
+          sku_font_style = :italic
+        else
+          product_name = "(NON-RETURNABLE) #{product_name}"
+        end
       end
 
       if item.discount > 0.0
         product_name += " - #{sprintf("%0.1f", item.discount)}% off"
       end
 
-      row = [item.variant.sku]
+      row = [Prawn::Table::Cell.new(text: sku, font_style: sku_font_style)]
       row << product_name
       row << number_to_currency(item.price) unless @hide_prices
       row << item.quantity
