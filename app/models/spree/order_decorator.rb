@@ -7,7 +7,7 @@ Spree::Order.class_eval do
     :value => Proc.new { |p| p.number }
 
   def valid_payments
-    payments.where{((state == "checkout") | (state == "pending") | (state == "completed")) & (amount > 0.0)}.order("created_at desc")
+    payments.where{((state == "checkout") | (state == "pending") | (state == "completed"))}.order("created_at desc")
   end
 
   def display_pay_state(p)
@@ -47,18 +47,24 @@ Spree::Order.class_eval do
         p_text = ""
 
         pm = p.payment_method
-        if pm and pm.name == "Credit Card" and p.source.try(:cc_type)
-          p_text += "#{p.source.cc_type.upcase} ends in #{p.source.last_digits}"
-        elsif pm
-          p_text += "#{pm.name.upcase}"
+        if p.amount > 0.0
+          if pm and pm.name == "Credit Card" and p.source.respond_to?(:cc_type)
+            p_text += "#{p.source.cc_type.upcase} ends in #{p.source.last_digits}"
+          elsif pm
+            p_text += "#{pm.name.upcase}"
+          end
+
+          p_text += ": "
         end
 
-        if not balance_due or pm.name == "Credit Card"
-          p_text += ": #{p.state == "completed" ? "PAID" : "DUE"}="
+        if p.amount < 0.0
+          p_text += "Refunded "
+        elsif not balance_due or pm.name == "Credit Card"
+          p_text += "#{p.state == "completed" ? "PAID" : "DUE"}="
         else
-          p_text += ": DUE="
+          p_text += "DUE="
         end
-        p_text += "#{Spree::Money.new(p.amount)}"
+        p_text += "#{Spree::Money.new(p.amount.abs)}"
 
 
         pa.push(p_text)
@@ -80,13 +86,14 @@ Spree::Order.class_eval do
 
       valid_payments.each do |p|
         pm = p.payment_method
-
-        if pm and pm.name == "Credit Card" and p.source.try(:cc_type)
-           pa.push("#{p.source.cc_type.upcase}")
-        elsif pm
-          pa.push("#{pm.name.upcase}")
-        else
-          "DELETED"
+        if p.amount > 0.0
+          if pm and pm.name == "Credit Card" and p.source.respond_to?(:cc_type)
+             pa.push("#{p.source.cc_type.upcase}")
+          elsif pm
+            pa.push("#{pm.name.upcase}")
+          else
+            "DELETED"
+          end
         end
       end
 

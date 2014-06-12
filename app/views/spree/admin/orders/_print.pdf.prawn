@@ -90,7 +90,6 @@ unless @hide_prices
       move_down 5
     end
 
-
     if params["balance_due"] == "true"
       text "Payment: #{@order.payment_summary(true)}"
     elsif not @quote
