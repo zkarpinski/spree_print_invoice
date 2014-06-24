@@ -285,13 +285,14 @@ bounding_box [0,cursor], :width => 550, :height => cursor do
     additional_info += " - #{@order.slug}"
   end
 
-  bounding_box [10, 50], :width => 185, height: 40 do
+  bounding_box [10, 60], :width => 185, height: 50 do
     if @shipment
       text "S#{@order.id}#{additional_info}"
       barcode = Barby::Code39.new @shipment.number
       barcode.annotate_pdf(self, height: 30, width: 100)
 
     else
+      text "#{Time.current.strftime("%H%M%S.%y%m%d")} -- #{@order.picked_at ? @order.picked_at.strftime("%H%M%S.%y%m%d") : "N/A"}"
       text "O#{@order.id}#{additional_info}"
       barcode = Barby::Code39.new @order.number
       barcode.annotate_pdf(self, height: 30, width: 100)
@@ -308,7 +309,5 @@ bounding_box [0,cursor], :width => 550, :height => cursor do
   end
 
 end
-
-move_down 10
 
 
